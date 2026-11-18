@@ -4,6 +4,8 @@ local ffi = require("ffi")
 local M = {}
 
 M.config = {
+  -- dir holding libtrig (and the trig CLI); nil = search rtp, then PATH
+  bin_dir = nil,
   -- index the git root of cwd on VimEnter
   auto_index = true,
   -- hits per keystroke in :TrigLive (verify stops early past this)
@@ -22,8 +24,8 @@ local function notify(msg, level)
 end
 
 local function lib()
-  if not tffi.lib then
-    error("trig: native lib not built (run `cargo build --release` in " .. tffi.plugin_root .. "): " .. tostring(tffi.load_error))
+  if not tffi.load(M.config.bin_dir) then
+    error("trig: " .. tffi.load_error)
   end
   return tffi.lib
 end
@@ -139,7 +141,8 @@ end
 --- :TrigLive -> fzf.vim picker, the trig CLI re-runs on every keystroke against the same DB.
 function M.live(query, fullscreen)
   local h, root = M.engine()
-  if not vim.env.PATH:find(tffi.bin_dir, 1, true) then
+  local cli = tffi.bin_dir .. "/trig"
+  if vim.fn.executable(cli) == 1 and not vim.env.PATH:find(tffi.bin_dir, 1, true) then
     vim.env.PATH = tffi.bin_dir .. ":" .. vim.env.PATH
   end
   local db = ffi.string(lib().trig_db_path(h))

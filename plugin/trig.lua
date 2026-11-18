@@ -36,7 +36,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 local function auto_index()
   local t = trig()
-  if t.config.auto_index and require("trig.native").lib and vim.fs.root(vim.fn.getcwd(), ".git") then
+  if t.config.auto_index and require("trig.native").load(t.config.bin_dir) and vim.fs.root(vim.fn.getcwd(), ".git") then
     -- reconcile is incremental: only changed files since last run get re-read
     pcall(t.index, nil, { quiet = true })
   end

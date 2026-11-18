@@ -1,6 +1,0 @@
-[env]
-LIBCLANG_PATH = "/Library/Developer/CommandLineTools/usr/lib"
-
-# bindgen's build script links libclang via @rpath; cargo clobbers DYLD_* vars.
-[target.aarch64-apple-darwin]
-rustflags = ["-C", "link-arg=-Wl,-rpath,/Library/Developer/CommandLineTools/usr/lib"]
